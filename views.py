@@ -28,17 +28,23 @@ class AdsView(MethodView):
                             'owner': new_ads.owner
                             })
 
-    def patch(self,user_id):
+    def patch(self,user_id : int):
         ads_data = request.json
         with Session() as session:
-          ads_delete = session.query(AdsModel).get(user_id)
+          ads_patch = session.query(AdsModel).get(user_id)
           for field, value in ads_data.items():
-              setattr(ads_delete,field, value )
-          session.add(ads_delete)
+              setattr(ads_patch,field, value )
+          session.add(ads_patch)
           session.commit()
-          return jsonify({'heading': ads_delete.heading,
-                          'description': ads_delete.description,
-                          'date_creation': ads_delete.date_creation,
-                          'owner': ads_delete.owner
+          return jsonify({'heading': ads_patch.heading,
+                          'description': ads_patch.description,
+                          'date_creation': ads_patch.date_creation,
+                          'owner': ads_patch.owner
                           })
 
+    def delete(self, user_id: int):
+        with Session() as session:
+          ads_delete = session.query(AdsModel).get(user_id)
+          session.delete(ads_delete)
+          session.commit()
+          return jsonify({'status':'deleted'})
